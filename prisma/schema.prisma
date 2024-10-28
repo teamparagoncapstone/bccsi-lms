@@ -1,0 +1,298 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+enum EducatorLevel {
+    EducatorOne
+    EducatorTwo
+    EducatorThree
+}
+
+enum Grade {
+    GradeOne
+    GradeTwo
+    GradeThree
+}
+
+enum Role {
+    Administrator
+    Teacher
+    Student
+    Principal
+    Registrar
+}
+
+enum Gender {
+    Male
+    Female
+}
+
+enum Subject {
+    Reading
+    Math
+}
+
+model User {
+    id                  String              @id @unique @default(cuid())
+    name                String
+    username            String              @unique
+    email               String?
+    password            String?
+    role                Role?
+    image               String?             @db.Text
+    resetPasswordExpiry DateTime?
+    createdAt           DateTime            @default(now())
+    deletedAt           DateTime?
+    Question            Questions[]
+    OTP                 OTP[]
+    students            Student[]
+    educators           Educator[]
+    VoiceExcercises     VoiceExcercises[]
+    ComprehensionTest   ComprehensionTest[]
+    AuditLogs           AuditLogs[]
+    Module              Module[]
+}
+
+model Educator {
+    id                       String              @id @unique @default(cuid())
+    name                     String
+    username                 String              @unique
+    email                    String?
+    password                 String?
+    educatorLevel            EducatorLevel?
+    image                    String?             @db.Text
+    resetPasswordToken       String?             @unique
+    resetPasswordTokenExpiry DateTime?
+    createdAt                DateTime            @default(now())
+    deletedAt                DateTime?
+    user                     User?               @relation(fields: [userId], references: [id])
+    userId                   String?
+    Question                 Questions[]
+    OTP                      OTP[]
+    students                 Student[]
+    VoiceExcercises          VoiceExcercises[]
+    ComprehensionTest        ComprehensionTest[]
+}
+
+model Student {
+    id                     String                   @id @unique @default(cuid())
+    lrnNo                  String?
+    firstname              String?
+    lastname               String?
+    middlename             String?
+    studentUsername        String?                  @unique
+    studentPassword        String?
+    sex                    Gender
+    bdate                  String?
+    age                    String?
+    grade                  Grade
+    gname                  String?
+    image                  String
+    user                   User?                    @relation(fields: [userId], references: [id])
+    userId                 String?
+    StudentQuizHistory     StudentQuizHistory[]
+    VoiceExcercisesHistory VoiceExcercisesHistory[]
+    ComprehensionHistory   ComprehensionHistory[]
+    Educator               Educator?                @relation(fields: [educatorId], references: [id])
+    educatorId             String?
+    StudentProgress        StudentProgress[]
+    Award                  Award[]
+}
+
+model Module {
+    id                String            @id @unique @default(cuid())
+    moduleTitle       String
+    moduleDescription String
+    learnOutcome1     String?
+    videoModule       String?
+    imageModule       String?
+    grade             Grade
+    subjects          Subject
+    createdAt         DateTime          @default(now())
+    updatedAt         DateTime?
+    Questions         Questions[]
+    VoiceExcercises   VoiceExcercises[]
+    StudentProgress   StudentProgress[]
+    userId            String?
+    User              User?             @relation(fields: [userId], references: [id])
+}
+
+model Questions {
+    id                 String               @id @unique @default(cuid())
+    userId             String?
+    image              String?              @db.Text
+    question           String
+    Option1            String
+    Option2            String
+    Option3            String
+    CorrectAnswers     String
+    grade              Grade
+    createdAt          DateTime             @default(now())
+    updatedAt          DateTime?
+    user               User?                @relation(fields: [userId], references: [id], onDelete: Cascade)
+    StudentQuizHistory StudentQuizHistory[]
+    moduleId           String
+    Module             Module               @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+    Educator           Educator?            @relation(fields: [educatorId], references: [id])
+    educatorId         String?
+}
+
+model VoiceExcercises {
+    id                    String                   @id @unique @default(cuid())
+    userId                String?
+    voiceImage            String?                  @db.Text
+    voice                 String
+    grade                 Grade
+    createdAt             DateTime                 @default(now())
+    updatedAt             DateTime?
+    user                  User?                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    moduleId              String
+    Module                Module                   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+    VoiceExercisesHistory VoiceExcercisesHistory[]
+    ComprehensionTest     ComprehensionTest[]
+    Educator              Educator?                @relation(fields: [educatorId], references: [id])
+    educatorId            String?
+}
+
+model StudentQuizHistory {
+    id                  String    @id @unique @default(cuid())
+    question            String
+    image               String?   @db.Text
+    Option1             String
+    Option2             String
+    Option3             String
+    CorrectAnswer       String
+    chooseAnswer        String
+    createdAt           DateTime  @default(now())
+    updatedAt           DateTime?
+    questionId          String
+    studentId           String
+    score               Int
+    feedback            String?
+    attemptCount        Int       @default(1)
+    correctAnswersCount Int?
+    wrongAnswersCount   Int?
+    totalQuestions      Int?
+
+    Question Questions @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+    Student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+    completed Boolean @default(false)
+}
+
+model VoiceExcercisesHistory {
+    id                 String           @id @unique @default(cuid())
+    voice              String
+    voiceImage         String?          @db.Text
+    voiceRecord        String?
+    recognizedText     String
+    accuracyScore      Int
+    pronunciationScore Int
+    fluencyScore       Int
+    speedScore         Int
+    score              Int
+    phonemes           String
+    createdAt          DateTime         @default(now())
+    VoiceExcercises    VoiceExcercises? @relation(fields: [voiceExercisesId], references: [id])
+    voiceExercisesId   String?
+    Student            Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+    studentId          String
+    completed          Boolean          @default(false)
+}
+
+model ComprehensionTest {
+    id                   String                 @id @unique @default(cuid())
+    userId               String?
+    image                String?                @db.Text
+    question             String
+    Option1              String
+    Option2              String
+    Option3              String
+    CorrectAnswers       String
+    grade                Grade
+    createdAt            DateTime               @default(now())
+    updatedAt            DateTime?
+    user                 User?                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+    voiceId              String
+    VoiceExcercises      VoiceExcercises        @relation(fields: [voiceId], references: [id], onDelete: Cascade)
+    ComprehensionHistory ComprehensionHistory[]
+    Educator             Educator?              @relation(fields: [educatorId], references: [id])
+    educatorId           String?
+}
+
+model ComprehensionHistory {
+    id                  String            @id @unique @default(cuid())
+    question            String
+    Option1             String
+    Option2             String
+    Option3             String
+    CorrectAnswer       String
+    chooseAnswer        String
+    createdAt           DateTime          @default(now())
+    updatedAt           DateTime?
+    comprehensionId     String
+    studentId           String
+    score               Int
+    feedback            String?
+    correctAnswersCount Int?
+    wrongAnswersCount   Int?
+    totalQuestions      Int?
+    ComprehensionTest   ComprehensionTest @relation(fields: [comprehensionId], references: [id], onDelete: Cascade)
+    Student             Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+    completed           Boolean           @default(false)
+}
+
+model OTP {
+    id         String    @id @default(cuid())
+    userId     String
+    otp        String
+    expiresAt  DateTime
+    isUsed     Boolean   @default(false)
+    user       User      @relation(fields: [userId], references: [id])
+    Educator   Educator? @relation(fields: [educatorId], references: [id])
+    educatorId String?
+}
+
+model AuditLogs {
+    id        String   @id @unique @default(cuid())
+    userId    String?
+    action    String
+    entityId  String
+    timestamp DateTime @default(now())
+    details   String?
+
+    user User? @relation(fields: [userId], references: [id])
+}
+
+model StudentProgress {
+    id             String    @id @unique @default(cuid())
+    student        Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+    studentId      String
+    module         Module    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+    moduleId       String
+    quizCompleted  Boolean   @default(false)
+    voiceCompleted Boolean   @default(false)
+    progress       Float     @default(0.0)
+    createdAt      DateTime  @default(now())
+    updatedAt      DateTime?
+}
+
+model Award {
+    id        String   @id @unique @default(cuid())
+    studentId String
+    student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+    awardType String
+    tier      String?
+    createdAt DateTime @default(now())
+}
