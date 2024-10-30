@@ -61,7 +61,7 @@ const VoiceExercisesList = ({ moduleTitle }: VoiceExercisesListProps) => {
       const fetchVoiceExercises = async () => {
         try {
           const response = await fetch(
-            `https://bcssi-lms.vercel.app/api/voice-exercises?moduleTitle=${encodeURIComponent(moduleTitle)}&studentId=${session.user.studentId}`
+            `https://bccsi-lms.vercel.app/api/voice-exercises?moduleTitle=${encodeURIComponent(moduleTitle)}&studentId=${session.user.studentId}`
           );
 
           if (!response.ok) throw new Error("Failed to fetch exercises");
