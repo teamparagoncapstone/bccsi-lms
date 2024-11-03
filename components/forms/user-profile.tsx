@@ -42,6 +42,8 @@ export function UserProfile() {
 
   useEffect(() => {
     if (!loading && session) {
+      console.log("Session:", session); // Log session object
+
       const username = session.user?.username;
       if (!username) {
         setError("User is not authenticated or username is missing.");

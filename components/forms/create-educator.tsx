@@ -56,7 +56,6 @@ export function AddNewEducator() {
   >({});
   const [isLoading, setIsLoading] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
-  const [usernameExists, setUsernameExists] = useState(false);
 
   const handleChange = useCallback(
     (key: keyof typeof formData) => (value: string | undefined) => {
@@ -108,13 +107,6 @@ export function AddNewEducator() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        if (
-          errorData.message.includes(
-            "An educator with this username already exists"
-          )
-        ) {
-          setUsernameExists(true);
-        }
         throw new Error(errorData.message);
       }
 
@@ -198,11 +190,6 @@ export function AddNewEducator() {
                     }}
                     className={formErrors.username ? "invalid" : ""}
                   />
-                  {usernameExists && (
-                    <p className="text-red-600 text-sm">
-                      *Username already exists.
-                    </p>
-                  )}
                 </div>
               </div>
               <div className="flex">

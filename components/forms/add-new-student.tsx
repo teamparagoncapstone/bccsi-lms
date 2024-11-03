@@ -141,6 +141,8 @@ export function AddNewStudent() {
     setIsLoading(true);
     setFormErrors({});
 
+    console.log("Form Data being sent:", JSON.stringify(formData)); // Debug log
+
     try {
       if (!userId) {
         throw new Error("User ID is not available. Please log in again.");
@@ -178,13 +180,9 @@ export function AddNewStudent() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        if (errorData.message === "Username already exists.") {
-          setFormErrors({ studentUsername: true });
-          toast.error("Username already exists.");
-        } else {
-          throw new Error(errorData.message || response.statusText);
-        }
+        throw new Error(errorData.message || response.statusText);
       }
+
       setFormData({
         firstname: "",
         lastname: "",

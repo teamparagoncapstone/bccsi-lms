@@ -172,6 +172,8 @@ export default function ComprehensionTest() {
         throw new Error("Some voice IDs are invalid.");
       }
 
+      console.log("Data to send:", dataToSend); // Debug log
+
       // Validate each question
       dataToSend.forEach((q) => {
         VoiceExerciseSchema.parse(q); // This will throw if validation fails
