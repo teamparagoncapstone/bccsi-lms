@@ -16,8 +16,6 @@ import { useRouter } from "next/navigation";
 import ComprehensionList from "./comprehensionList";
 import { FaArrowLeft } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
-import { FaStar, FaThumbsUp } from "react-icons/fa";
-import { toast } from "react-hot-toast";
 interface VoiceExercise {
   id: string;
   voice: string;
@@ -58,25 +56,6 @@ const VoiceExercisesList = ({ moduleTitle }: VoiceExercisesListProps) => {
   const { data: session, status } = useSession();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const showSuccessToast = () => {
-    toast.success(
-      <div className="flex items-center space-x-2">
-        <FaStar className="text-yellow-400 animate-bounce" />
-        <span className="text-lg font-bold text-pink-600">Great Job!</span>
-      </div>,
-      {
-        duration: 4000,
-        icon: "🎉",
-        style: {
-          borderRadius: "10px",
-          background: "#FFF4E5",
-          color: "#444",
-          boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.4)",
-        },
-      }
-    );
-  };
   const router = useRouter();
   useEffect(() => {
     const fetchVoiceExercises = async () => {
@@ -88,7 +67,9 @@ const VoiceExercisesList = ({ moduleTitle }: VoiceExercisesListProps) => {
         }
 
         const response = await fetch(
-          `http://127.0.0.1:5000/api/voice-exercises?moduleTitle=${encodeURIComponent(
+          // `http://127.0.0.1:5000/api/voice-exercises?moduleTitle=${encodeURIComponent(
+          `https://bccsi-lms.vercel.app/api/voice-exercises?moduleTitle=${encodeURIComponent(
+        
             moduleTitle
           )}&studentId=${session.user.studentId}`
         );
@@ -98,25 +79,47 @@ const VoiceExercisesList = ({ moduleTitle }: VoiceExercisesListProps) => {
         }
 
         const data = await response.json();
+        if (!data.exercises || !Array.isArray(data.exercises)) {
+          throw new Error(
+            "Expected an array of exercises, received invalid data."
+          );
+        }
 
-        if (data.exercises && Array.isArray(data.exercises)) {
-          const incompleteExercises = data.exercises.filter(
-            (exercise: VoiceExercise) => !exercise.isCompleted
+        const incompleteExercises = data.exercises.filter(
+          (exercise: VoiceExercise) => !exercise.isCompleted
+        );
+        setVoiceExercises(incompleteExercises);
+
+        if (incompleteExercises.length > 0) {
+          const storedSubmission = localStorage.getItem(
+            `${incompleteExercises[0].id}_${session.user.studentId}_submitted`
           );
 
-          if (incompleteExercises.length > 0) {
-            setVoiceExercises(incompleteExercises);
-            setCurrentExercise(incompleteExercises[0]);
-          } else {
-            const completedExercise = data.exercises.find(
-              (exercise: VoiceExercise) => exercise.isCompleted
+          if (storedSubmission === "true") {
+            const storedScores = localStorage.getItem(
+              `${incompleteExercises[0].id}_${session.user.studentId}`
             );
-            if (completedExercise) {
-              setScores(completedExercise.scores);
-              setIsSubmitted(true);
-              setIsDialogOpen(true);
+            if (storedScores) {
+              setScores(JSON.parse(storedScores));
             }
+            setIsSubmitted(true);
+            setIsDialogOpen(true);
+          } else {
+            setCurrentExercise(incompleteExercises[0]);
           }
+        } else {
+          setScores({
+            accuracy_score: 0,
+            pronunciation_score: 0,
+            fluency_score: 0,
+            speed_score: 0,
+            final_score: 0,
+            grade: "N/A",
+            phonemes: [],
+            recognized_text: "N/A",
+            voiceRecord: "",
+          });
+          setIsDialogOpen(true);
         }
       } catch (error) {
         console.error("Error fetching voice exercises:", error);
@@ -165,7 +168,10 @@ const VoiceExercisesList = ({ moduleTitle }: VoiceExercisesListProps) => {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:5000/api/voice-exercises-history",
+        // "http://127.0.0.1:5000/api/voice-exercises-history",
+        "https://bccsi-lms.vercel.app/api/voice-exercises-history",
+
+        
         {
           method: "POST",
           body: formData,
@@ -209,18 +215,12 @@ const VoiceExercisesList = ({ moduleTitle }: VoiceExercisesListProps) => {
     setCurrentExercise(voiceExercises.length > 0 ? voiceExercises[0] : null);
   };
   const handleSubmitExercise = async () => {
-    setIsSubmitting(true);
     try {
-      // Remove specific items related to current exercise
-      localStorage.removeItem(
-        `${currentExercise?.id}_${session?.user?.studentId}`
-      );
-      localStorage.removeItem(
-        `${currentExercise?.id}_${session?.user?.studentId}_submitted`
-      );
-
       const response = await fetch(
-        "http://127.0.0.1:5000/api/submit-exercise",
+        // "http://127.0.0.1:5000/api/submit-exercise",
+        "https://bccsi-lms.vercel.app/api/submit-exercise",
+
+        
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -244,28 +244,21 @@ const VoiceExercisesList = ({ moduleTitle }: VoiceExercisesListProps) => {
       if (!response.ok) throw new Error("Failed to submit exercise.");
 
       setIsSubmitted(true);
-      showSuccessToast();
-      localStorage.setItem("isSubmitted", "true");
-      localStorage.setItem("scores", JSON.stringify(scores));
 
       localStorage.setItem(
         `${currentExercise?.id}_${session?.user?.studentId}_submitted`,
         "true"
       );
-
       localStorage.setItem(
         `${currentExercise?.id}_${session?.user?.studentId}`,
         JSON.stringify(scores)
       );
+
       setIsDialogOpen(false);
       setCurrentExercise(null);
     } catch (error) {
-      if (error instanceof Error) {
-        console.error("Error submitting exercise:", error.message);
-        localStorage.clear();
-      }
-    } finally {
-      setIsSubmitting(false);
+      console.error("Error submitting exercise:", error);
+      setError("Failed to submit exercise. Please try again.");
     }
   };
   return (
@@ -284,7 +277,6 @@ const VoiceExercisesList = ({ moduleTitle }: VoiceExercisesListProps) => {
       <h1 className="text-4xl font-extrabold mb-6 text-red-700 drop-shadow-lg mt-24 md:mt-10">
         Voice Exercises
       </h1>
-
       {currentExercise && (
         <div className="mt-8">
           <label
@@ -364,39 +356,10 @@ const VoiceExercisesList = ({ moduleTitle }: VoiceExercisesListProps) => {
             {scores && (
               <button
                 onClick={handleSubmitExercise}
-                disabled={isSubmitting}
-                className={`mt-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-md p-2 transition duration-200 ${
-                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-md p-2 transition duration-200"
                 aria-label="Submit Exercise"
               >
-                {isSubmitting ? (
-                  <div className="flex items-center space-x-2">
-                    <svg
-                      className="animate-spin h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v8H4z"
-                      ></path>
-                    </svg>
-                    <span>Submitting...</span>
-                  </div>
-                ) : (
-                  <span>Submit Exercise</span>
-                )}
+                Submit Exercise
               </button>
             )}
           </div>
@@ -404,12 +367,7 @@ const VoiceExercisesList = ({ moduleTitle }: VoiceExercisesListProps) => {
           {error && <p className="text-red-600">{error}</p>}
         </div>
       )}
-      {isSubmitted && (
-        <p className="mt-8 text-2xl font-bold text-gray-700 text-center">
-          🎉 You&apos;ve completed this exercise! Take a moment to appreciate
-          your progress!
-        </p>
-      )}
+
       {/* Display Scores Button */}
       {scores && (
         <button
@@ -472,7 +430,7 @@ const VoiceExercisesList = ({ moduleTitle }: VoiceExercisesListProps) => {
                   <p className="text-xl">
                     Grade: <span className="font-bold">{scores.grade}</span>
                   </p>
-                  {/* {scores.phonemes &&
+                  {scores.phonemes &&
                     Array.isArray(scores.phonemes) &&
                     scores.phonemes.length > 0 && (
                       <div>
@@ -486,15 +444,13 @@ const VoiceExercisesList = ({ moduleTitle }: VoiceExercisesListProps) => {
                           </div>
                         ))}
                       </div>
-                    )} */}
+                    )}
                 </div>
               )}
             </div>
             <DialogFooter className="flex flex-col sm:flex-row">
-              {scores && !isSubmitted && currentExercise && (
-                <div className="w-full sm:w-auto mb-2 sm:mb-0">
-                  <ComprehensionList voice={currentExercise.voice} />
-                </div>
+              {!isSubmitted && (
+                <div className="w-full sm:w-auto mb-2 sm:mb-0"></div>
               )}
               <button
                 onClick={() => setIsDialogOpen(false)}
