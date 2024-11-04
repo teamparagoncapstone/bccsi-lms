@@ -82,4 +82,16 @@ class Module(db.Model):
     updatedAt = db.Column(db.DateTime, onupdate=db.func.now())
 
 
-    VoiceExcercises = db.relationship('VoiceExcercises', backref='module')  
+    VoiceExcercises = db.relationship('VoiceExcercises', backref='module') 
+
+class Award(db.Model):
+    __tablename__ = 'Award'
+
+    id = db.Column(db.String, primary_key=True, unique=True, default=lambda: str(uuid.uuid4()))
+    studentId = db.Column(db.String, db.ForeignKey('Student.id', ondelete='CASCADE'), nullable=False)  
+    awardType = db.Column(db.String, nullable=False)  
+    tier = db.Column(db.String, nullable=True) 
+    createdAt = db.Column(db.DateTime, default=datetime.utcnow)  
+
+   
+    student = db.relationship('Student', backref='awarded_student', lazy=True)
