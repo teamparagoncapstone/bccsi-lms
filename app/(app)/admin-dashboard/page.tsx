@@ -8,8 +8,11 @@ import { Sidebar } from "./components/sidebar";
 import { lists } from "./data/lists";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
-
+import UnauthorizedPage from "@/components/forms/unauthorized";
+import Loading from "@/components/loading";
+import { useSession } from "next-auth/react";
 export default function AdminMenuBar() {
+  const { data: session, status } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [studentCounts, setStudentCounts] = useState({
     GradeOne: 0,
@@ -38,6 +41,14 @@ export default function AdminMenuBar() {
     }
   };
   const router = useRouter();
+
+  if (status === "loading")
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loading />
+      </div>
+    );
+  if (status === "unauthenticated") return <UnauthorizedPage />;
 
   return (
     <div className="flex flex-col h-screen">

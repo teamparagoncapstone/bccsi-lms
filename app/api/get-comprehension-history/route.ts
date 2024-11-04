@@ -22,7 +22,11 @@ export async function GET(req: NextRequest) {
       include: {
         ComprehensionTest: {
           include: {
-            VoiceExcercises: true, 
+            VoiceExcercises: {
+              select: {
+                voice: true, 
+              },
+            },
           },
         },
       },

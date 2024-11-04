@@ -17,6 +17,7 @@ interface UpdateEducatorRequestBody {
   password?: string;
   educatorLevel: EducatorLevel;
   image: string;
+  userId: string;
 }
 
 interface DeleteEducatorRequestBody {

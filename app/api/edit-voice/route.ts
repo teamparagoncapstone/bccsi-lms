@@ -13,10 +13,13 @@ interface UpdateVoiceRequestBody {
   voice: string;
   voiceImage: string;
   grade: Grade;
+  userId: string;
 }
 
 interface DeleteVoiceRequestBody {
   id: string;
+  voice: string;
+  userId: string;
 }
 
 export async function PUT(req: Request) {
@@ -34,10 +37,12 @@ export async function PUT(req: Request) {
         voice: body.voice,
         voiceImage: body.voiceImage,
         grade: body.grade,
+        userId: body.userId,
       },
     });
 
-    await logAudit(body.id, 'Update VoiceExercies', 'VoiceExercise', `Updated voice exercise with ID: ${body.voice}`);
+    // await logAudit(body.userId, 'Update VoiceExercises', 'VoiceExercise', `Updated voice exercise with ID: ${body.voice}`);
+
 
     return NextResponse.json(updatedVoiceExcercises);
   } catch (error) {
@@ -50,8 +55,8 @@ export async function DELETE(req: Request) {
   try {
     const body: DeleteVoiceRequestBody = await req.json();
 
-    if (!body.id) {
-      return NextResponse.json({ error: 'Voice Exercises ID is required' }, { status: 400 });
+    if (!body.id || !body.userId) {
+      return NextResponse.json({ error: 'Voice Exercises ID and User ID are required' }, { status: 400 });
     }
 
     // Delete the voice exercise
@@ -60,7 +65,7 @@ export async function DELETE(req: Request) {
     });
 
     // Log the deletion action
-    await logAudit(body.id, 'Delete VoiceExercises', 'VoiceExercise', `Deleted voice exercise with ID: ${body.id}`);
+    // await logAudit(body.userId, 'Delete VoiceExercises', 'VoiceExercise', `Deleted voice exercise with ID: ${body.voice}`);
 
     return NextResponse.json(deletedVoiceExercises);
   } catch (error) {

@@ -183,7 +183,9 @@ export function VoiceExercises() {
         },
       ]);
       toast.success("Voice exercises added successfully.");
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
       setSelectedGrade("");
     } catch (error) {
       const err = error as Error;
@@ -199,7 +201,7 @@ export function VoiceExercises() {
     <Dialog>
       <DialogTrigger>
         <Button variant="outline" className="bg-transparent">
-          <PlusCircleIcon className="pr-2" /> Create Voice Exercieses
+          <PlusCircleIcon className="pr-2" /> Create Voice Exercises
         </Button>
       </DialogTrigger>
       <form>

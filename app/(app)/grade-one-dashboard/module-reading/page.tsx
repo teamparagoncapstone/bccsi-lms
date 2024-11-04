@@ -14,6 +14,7 @@ import { SystemMenu } from "../_components/system-menu";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import NextVideo from "next-video";
+import sample from "@/videos/sample.mp4";
 
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";

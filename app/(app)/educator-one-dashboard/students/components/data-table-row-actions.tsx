@@ -123,7 +123,9 @@ export function DataTableRowActions<TData>({
 
       const result = await response.json();
       toast.success("Student updated successfully.");
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
       console.log("Student updated successfully:", result);
     } catch (error) {
       toast.error("Failed to update student");
@@ -152,7 +154,9 @@ export function DataTableRowActions<TData>({
       }
 
       toast.success("Student deleted successfully.");
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
       console.log("Student deleted successfully");
     } catch (error) {
       toast.error("Failed to delete student");

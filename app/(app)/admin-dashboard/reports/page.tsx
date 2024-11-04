@@ -102,8 +102,11 @@ export default function Reports() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [quizPage, setQuizPage] = useState(1);
+  const [voicePage, setVoicePage] = useState(1);
+  const [comprehensionPage, setComprehensionPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
   useEffect(() => {
     setSidebarOpen(false);
@@ -140,6 +143,20 @@ export default function Reports() {
       isMounted = false;
     };
   }, [grade]);
+
+  const paginatedQuizHistory = historyData?.quizHistory?.slice(
+    (quizPage - 1) * itemsPerPage,
+    quizPage * itemsPerPage
+  );
+  const paginatedVoiceExercises = historyData?.voiceExercisesHistory?.slice(
+    (voicePage - 1) * itemsPerPage,
+    voicePage * itemsPerPage
+  );
+  const paginatedComprehensionHistory =
+    historyData?.comprehensionHistory?.slice(
+      (comprehensionPage - 1) * itemsPerPage,
+      comprehensionPage * itemsPerPage
+    );
 
   const exportQuizToExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(historyData?.quizHistory || []);
@@ -542,7 +559,7 @@ export default function Reports() {
             </div>
           )}
           {/* Quiz History Table */}
-          <div className="flex gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row gap-4 mb-6">
             <CSVLink
               data={historyData?.quizHistory || []}
               filename={"quiz_history.csv"}
@@ -564,9 +581,15 @@ export default function Reports() {
             </button>
           </div>
 
-          <QuizHistoryTable quizHistory={historyData?.quizHistory ?? []} />
+          <QuizHistoryTable quizHistory={paginatedQuizHistory ?? []} />
+          <Pagination
+            currentPage={quizPage}
+            totalItems={historyData?.quizHistory?.length || 0}
+            itemsPerPage={itemsPerPage}
+            onPageChange={(page) => setQuizPage(page)}
+          />
 
-          <div className="flex gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row gap-4 mb-6 mt-4">
             <CSVLink
               data={historyData?.voiceExercisesHistory || []}
               filename={"voice_exercises.csv"}
@@ -590,9 +613,15 @@ export default function Reports() {
 
           {/* Voice Exercises Table */}
           <VoiceExerciseTable
-            voiceExercisesHistory={historyData?.voiceExercisesHistory ?? []}
+            voiceExercisesHistory={paginatedVoiceExercises ?? []}
           />
-          <div className="flex gap-4 mb-6">
+          <Pagination
+            currentPage={voicePage}
+            totalItems={historyData?.voiceExercisesHistory?.length || 0}
+            itemsPerPage={itemsPerPage}
+            onPageChange={(page) => setVoicePage(page)}
+          />
+          <div className="flex flex-col sm:flex-row gap-4 mb-6 mt-4">
             <CSVLink
               data={historyData?.comprehensionHistory || []}
               filename={"comprehension_history.csv"}
@@ -616,15 +645,13 @@ export default function Reports() {
           {/* Comprehension History Table */}
 
           <ComprehensionHistoryTable
-            comprehensionHistory={historyData?.comprehensionHistory ?? []}
+            comprehensionHistory={paginatedComprehensionHistory ?? []}
           />
-
-          {/* Pagination */}
           <Pagination
-            currentPage={currentPage}
-            totalItems={quizHistory.length}
+            currentPage={comprehensionPage}
+            totalItems={historyData?.comprehensionHistory?.length || 0}
             itemsPerPage={itemsPerPage}
-            onPageChange={(page) => setCurrentPage(page)}
+            onPageChange={(page) => setComprehensionPage(page)}
           />
         </div>
       </div>

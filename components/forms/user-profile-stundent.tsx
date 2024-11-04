@@ -98,7 +98,9 @@ export function StudentProfile() {
       const result = await response.json();
       if (result.status === "success") {
         toast.success("Profile updated successfully!");
-        window.location.reload();
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
         setPassword("");
       } else {
         throw new Error(result.message);

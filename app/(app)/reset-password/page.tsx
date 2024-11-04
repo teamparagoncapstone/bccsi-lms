@@ -20,7 +20,8 @@ const ResetPassword: React.FC = () => {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
-            handleTimeout();
+            toast.error("OTP expired.");
+            router.push("/");
             return 0;
           }
           return prev - 1;
@@ -29,13 +30,7 @@ const ResetPassword: React.FC = () => {
 
       return () => clearInterval(timer);
     }
-  }, [step]);
-
-  // Handle timeout
-  const handleTimeout = () => {
-    toast.error("OTP expired.");
-    router.push("/");
-  };
+  }, [step, router]);
 
   // Handle OTP change
   const handleOtpChange = (index: number, value: string) => {

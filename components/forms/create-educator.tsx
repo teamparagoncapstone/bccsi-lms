@@ -30,6 +30,14 @@ import { useSession as useNextAuthSession } from "next-auth/react";
 import { EducatorLevel } from "@prisma/client";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 
+interface User {
+  id: string;
+  name: string | null;
+  username: string | null;
+  email: string | null;
+  image: string | null;
+  role: string;
+}
 const EducatorSchema = z.object({
   name: z.string(),
   username: z.string(),
@@ -37,11 +45,12 @@ const EducatorSchema = z.object({
   email: z.string().email("Invalid email format"),
   educatorLevel: z.string(),
   image: z.string(),
+  userId: z.string(),
 });
 
 export function AddNewEducator() {
   const { data: session } = useNextAuthSession();
-
+  const userId = (session?.user as User)?.id;
   const [formData, setFormData] = useState({
     name: "",
     username: "",
@@ -56,6 +65,7 @@ export function AddNewEducator() {
   >({});
   const [isLoading, setIsLoading] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
+  const [usernameExists, setUsernameExists] = useState(false);
 
   const handleChange = useCallback(
     (key: keyof typeof formData) => (value: string | undefined) => {
@@ -70,6 +80,7 @@ export function AddNewEducator() {
         } else if (key === "email") {
           const emailValidation = EducatorSchema.safeParse({
             ...formData,
+            userId,
             email: value,
           });
           setFormErrors((prev) => ({
@@ -79,7 +90,7 @@ export function AddNewEducator() {
         }
       }
     },
-    []
+    [formData, userId]
   );
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -93,7 +104,7 @@ export function AddNewEducator() {
         return;
       }
 
-      EducatorSchema.parse(formData);
+      const validatedData = { ...formData, userId };
       const response = await fetch("/api/create-educator", {
         method: "POST",
         headers: {
@@ -102,11 +113,18 @@ export function AddNewEducator() {
             (session as { accessToken: string })?.accessToken
           }`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(validatedData),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
+        if (
+          errorData.message.includes(
+            "An educator with this username already exists"
+          )
+        ) {
+          setUsernameExists(true);
+        }
         throw new Error(errorData.message);
       }
 
@@ -119,7 +137,9 @@ export function AddNewEducator() {
         image: "",
       });
       toast.success("Educator added successfully.");
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
       const err = error as Error;
       if (err.message.includes("Invalid email format")) {
@@ -190,6 +210,11 @@ export function AddNewEducator() {
                     }}
                     className={formErrors.username ? "invalid" : ""}
                   />
+                  {usernameExists && (
+                    <p className="text-red-600 text-sm">
+                      *Username already exists.
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex">

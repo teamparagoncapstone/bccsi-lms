@@ -1,11 +1,15 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation"; // for dynamic params
-import { UserNav } from "@/app/(app)/grade-three-dashboard/_components/user-nav";
+import { UserNav } from "@/app/(app)/grade-one-dashboard/_components/user-nav";
 import { SystemMenu } from "../_components/system-menu";
 import { Separator } from "@/components/ui/separator";
-import TeamSwitcher from "@/app/(app)/grade-three-dashboard/_components/team-switcher";
+import TeamSwitcher from "@/app/(app)/grade-one-dashboard/_components/team-switcher";
 import Loading from "../loading";
+import { useSession } from "next-auth/react";
+
+interface VoiceExcercise {
+  voice: string | null;
+}
 
 interface ComprehensionTest {
   id: string;
@@ -14,24 +18,32 @@ interface ComprehensionTest {
   Option2: string;
   Option3: string;
   CorrectAnswer: string;
-  correctAnswersCount: string;
-  wrongAnswersCount: string;
-  Student: {
-    id: string | null;
-    firstname: string;
-    lastname: string;
-  };
   chooseAnswer: string;
+  completed: boolean;
+  correctAnswersCount: number;
+  createdAt: string;
   feedback: string | null;
   score: number;
+  totalQuestions: number;
+  VoiceExcercises: VoiceExcercise;
+}
+
+interface ComprehensionHistory {
+  id: string;
+  question: string;
+  score: number;
+  correctAnswersCount: number;
+  wrongAnswersCount: number;
+  feedback: string | null;
   createdAt: string;
-  voice: string | null;
+  ComprehensionTest: ComprehensionTest;
+  studentId: string;
+  totalQuestions: number;
 }
 
 const ComprehensionHistory: React.FC = () => {
-  const { studentId } = useParams(); // Dynamically get studentId from URL
-
-  const [history, setHistory] = useState<ComprehensionTest[]>([]);
+  const { data: session } = useSession();
+  const [history, setHistory] = useState<ComprehensionHistory[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -40,13 +52,17 @@ const ComprehensionHistory: React.FC = () => {
   const itemsPerPage = 5;
 
   useEffect(() => {
-    if (!studentId) return; // If no studentId, exit early
+    if (!session) return;
+
+    const studentId = session.user.studentId;
+
     const fetchHistory = async () => {
       try {
         const response = await fetch(
-          `/api/comprehension-three-history?studentId=${studentId}`
+          `/api/get-comprehension-history?studentId=${studentId}`
         );
         const data = await response.json();
+        console.log(data); // Debugging: log the API response
 
         if (data.status === "success") {
           setHistory(data.history);
@@ -62,15 +78,23 @@ const ComprehensionHistory: React.FC = () => {
     };
 
     fetchHistory();
-  }, [studentId]);
+  }, [session]);
 
-  const filteredHistory = history.filter(
-    (item) =>
-      (item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (item.voice &&
-          item.voice.toLowerCase().includes(searchQuery.toLowerCase()))) &&
-      item.voice
+  // Filter and get unique history items based on VoiceExercise ID
+  const uniqueHistory = Array.from(
+    new Map(
+      history.map((item) => [
+        item.ComprehensionTest.VoiceExcercises?.voice || "No voice exercise",
+        item,
+      ])
+    ).values()
   );
+
+  // Search only in Voice Exercises
+  const filteredHistory = uniqueHistory.filter((item) => {
+    const voiceExercise = item.ComprehensionTest?.VoiceExcercises?.voice || "";
+    return voiceExercise.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   const totalPages = Math.ceil(filteredHistory.length / itemsPerPage);
   const currentData = filteredHistory.slice(
@@ -89,12 +113,13 @@ const ComprehensionHistory: React.FC = () => {
     setCurrentPage(1);
   };
 
-  if (loading)
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Loading />
       </div>
     );
+  }
   if (error) return <p>Error: {error}</p>;
 
   return (
@@ -128,48 +153,59 @@ const ComprehensionHistory: React.FC = () => {
         <div className="mb-6">
           <input
             type="text"
-            placeholder="Search by question or voice exercise..."
+            placeholder="Search by voice exercise..."
             value={searchQuery}
             onChange={handleSearch}
             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
           />
         </div>
-        <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-          <thead>
-            <tr className="bg-blue-100 text-gray-700">
-              <th className="py-2 px-4 border-b">Voice Exercises</th>
-              <th className="py-2 px-4 border-b">Question</th>
-              <th className="py-2 px-4 border-b">Total Score</th>
-              <th className="py-2 px-4 border-b">Correct</th>
-              <th className="py-2 px-4 border-b">Wrong</th>
-              <th className="py-2 px-4 border-b">Feedback</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentData.map((item) => (
-              <tr key={item.id} className="hover:bg-gray-50">
-                <td className="py-4 px-4 border-b text-blue-600">
-                  {item.voice}
-                </td>
-                <td className="py-4 px-4 border-b text-gray-800">
-                  {item.question}
-                </td>
-                <td className="py-4 px-4 border-b text-green-600 font-medium">
-                  {item.score}
-                </td>
-                <td className="py-4 px-4 border-b text-gray-700">
-                  {item.correctAnswersCount}
-                </td>
-                <td className="py-4 px-4 border-b text-gray-700">
-                  {item.wrongAnswersCount}
-                </td>
-                <td className="py-4 px-4 border-b text-gray-600">
-                  {item.feedback || "No feedback"}
-                </td>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+            <thead>
+              <tr className="bg-blue-100 text-gray-700">
+                <th className="py-2 px-4 border-b">Voice Exercises</th>
+                <th className="py-2 px-4 border-b">Total Questions</th>
+                <th className="py-2 px-4 border-b">Total Score</th>
+                <th className="py-2 px-4 border-b">Correct</th>
+                <th className="py-2 px-4 border-b">Wrong</th>
+                <th className="py-2 px-4 border-b">Feedback</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {currentData.length > 0 ? (
+                currentData.map((item) => (
+                  <tr key={item.id} className="hover:bg-gray-50">
+                    <td className="py-4 px-4 border-b text-blue-600">
+                      {item.ComprehensionTest?.VoiceExcercises?.voice ||
+                        "No voice exercise"}
+                    </td>
+                    <td className="py-4 px-4 border-b text-gray-800">
+                      {item.totalQuestions}
+                    </td>
+                    <td className="py-4 px-4 border-b text-green-600 font-medium">
+                      {item.score}
+                    </td>
+                    <td className="py-4 px-4 border-b text-gray-700">
+                      {item.correctAnswersCount}
+                    </td>
+                    <td className="py-4 px-4 border-b text-gray-700">
+                      {item.wrongAnswersCount}
+                    </td>
+                    <td className="py-4 px-4 border-b text-gray-600">
+                      {item.feedback || "No feedback"}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6} className="text-center py-4">
+                    No data available
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
         <div className="flex justify-center items-center mt-6 space-x-4">
           <button
             onClick={() => handlePageChange(currentPage - 1)}

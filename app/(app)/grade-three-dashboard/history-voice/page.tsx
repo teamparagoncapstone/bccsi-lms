@@ -22,7 +22,7 @@ interface VoiceExercisesHistory {
   createdAt: string;
 }
 
-const ITEMS_PER_PAGE = 5; // Number of items per page
+const ITEMS_PER_PAGE = 5;
 
 export default function VoiceHistory() {
   const { data: session } = useSession();
@@ -114,7 +114,7 @@ export default function VoiceHistory() {
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
-              setCurrentPage(1); // Reset to the first page on search
+              setCurrentPage(1);
             }}
           />
 
@@ -146,7 +146,7 @@ export default function VoiceHistory() {
                         <td className="py-2 px-4">{voice.recognizedText}</td>
                         <td className="py-2 px-4">{voice.accuracyScore}</td>
                         <td className="py-2 px-4">
-                          {parseFloat(voice.pronunciationScore).toFixed(2)}
+                          {Math.round(parseFloat(voice.pronunciationScore))}
                         </td>
                         <td className="py-2 px-4">{voice.fluencyScore}</td>
                         <td className="py-2 px-4">{voice.speedScore}</td>

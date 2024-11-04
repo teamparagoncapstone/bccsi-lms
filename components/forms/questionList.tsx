@@ -117,6 +117,8 @@ export function QuestionList({ moduleTitle }: QuestionListProps) {
 
     setFeedback(feedbackMessage);
 
+    const userId = session?.user.id || "";
+
     const submissionData = questions.map((question) => ({
       question: question.question,
       Option1: question.Option1,
@@ -126,6 +128,7 @@ export function QuestionList({ moduleTitle }: QuestionListProps) {
       chooseAnswer: answers[question.id],
       questionId: question.id,
       studentId: studentId,
+      userId: userId,
       studentUsername: session?.user.studentUsername || "",
       score: percentage,
       totalQuestions: questions.length,

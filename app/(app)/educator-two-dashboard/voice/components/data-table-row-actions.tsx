@@ -145,7 +145,9 @@ export function DataTableRowActions<TData>({
       }
       const result = await response.json();
       toast.success("Voice Exercises updated successfully.");
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
       console.log("Voice Exercises updated successfully:", result);
     } catch (error) {
       toast.error("Failed to update voice exercises");
@@ -172,7 +174,9 @@ export function DataTableRowActions<TData>({
         throw new Error(errorText || "Failed to delete voice exercises");
       }
       toast.success("Voice Exercises deleted successfully.");
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
       console.log("Voice Exercises deleted successfully");
     } catch (error) {
       toast.error("Failed to delete voice exercises");

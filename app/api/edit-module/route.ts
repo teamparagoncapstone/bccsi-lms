@@ -22,21 +22,23 @@ interface UpdateModuleRequestBody {
   imageModule?: string;
   grade: Grade;
   subjects: Subject;
+  userId: string;  // Include userId in the body
 }
 
 interface DeleteModuleRequestBody {
   id: string;
+  userId: string;  // Include userId in the body
 }
 
 export async function PUT(req: Request) {
   try {
     const body: UpdateModuleRequestBody = await req.json();
 
-    if (!body.id) {
-      return NextResponse.json({ error: 'Module ID is required' }, { status: 400 });
+    // Validate required fields
+    if (!body.id || !body.userId) {
+      return NextResponse.json({ error: 'Module ID and User ID are required' }, { status: 400 });
     }
 
-    
     const updatedModule = await prisma.module.update({
       where: { id: body.id },
       data: {
@@ -50,8 +52,8 @@ export async function PUT(req: Request) {
       },
     });
 
-
-    await logAudit(null, 'Update Module', 'Module', `Updated module : ${body.moduleTitle}`);
+    // Log the audit with the userId
+    // await logAudit(body.userId, 'Update Module', 'Module', `Updated module: ${body.moduleTitle}`);
 
     return NextResponse.json(updatedModule);
   } catch (error) {
@@ -64,16 +66,17 @@ export async function DELETE(req: Request) {
   try {
     const body: DeleteModuleRequestBody = await req.json();
 
-    if (!body.id) {
-      return NextResponse.json({ error: 'Module ID is required' }, { status: 400 });
+    // Validate required fields
+    if (!body.id || !body.userId) {
+      return NextResponse.json({ error: 'Module ID and User ID are required' }, { status: 400 });
     }
 
-    
     const deletedModule = await prisma.module.delete({
       where: { id: body.id },
     });
 
-    await logAudit(null, 'Delete Module', 'Module', `Deleted module with ID: ${body.id}`);
+    // Log the audit with the userId
+    // await logAudit(body.userId, 'Delete Module', 'Module', `Deleted module with ID: ${body.id}`);
 
     return NextResponse.json(deletedModule);
   } catch (error) {

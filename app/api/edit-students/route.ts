@@ -28,6 +28,7 @@ interface UpdateStudentRequestBody {
   grade: Grade;
   gname: string;
   image: string;
+  userId: string;
 }
 
 interface DeleteStudentRequestBody {
@@ -70,8 +71,8 @@ export async function PUT(req: Request) {
       },
     });
 
-   
-    await logAudit(body.studentUsername, 'Update Student', 'Student', `Updated student : ${body.id}`);
+    
+    await logAudit(updatedStudent.userId, 'Update Student', 'Student', `Updated student: ${body.firstname} ${body.lastname}`);
 
     return NextResponse.json(updatedStudent);
   } catch (error) {
@@ -91,7 +92,7 @@ export async function DELETE(req: Request) {
    
     const student = await prisma.student.findUnique({
       where: { id: body.id },
-      select: { userId: true },
+      select: { userId: true, firstname: true, lastname: true },
     });
 
     if (!student) {
@@ -111,7 +112,7 @@ export async function DELETE(req: Request) {
     }
 
 
-    await logAudit(null, 'Delete Student', 'Student', `Deleted student with ID: ${body.id}`);
+    await logAudit(student.userId, 'Delete Student', 'Student', `Deleted student: ${student.firstname} ${student.lastname}`);
 
     return NextResponse.json(deletedStudent);
   } catch (error) {

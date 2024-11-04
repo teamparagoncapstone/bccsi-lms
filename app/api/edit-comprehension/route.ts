@@ -47,7 +47,7 @@ export async function PUT(req: Request) {
     });
 
    
-    await logAudit(body.userId, 'Update ComprehensionTest', 'ComprehensionTest', `Updated comprehension test : ${body.question}`);
+    // await logAudit(body.userId, 'Update ComprehensionTest', 'ComprehensionTest', `Updated comprehension test : ${body.question}`);
 
     return NextResponse.json(updatedComprehension);
   } catch (error) {
@@ -77,7 +77,7 @@ export async function DELETE(req: Request) {
     });
 
     
-    await logAudit(null, 'Delete ComprehensionTest', 'ComprehensionTest', `Deleted comprehension test with ID: ${body.id}`);
+    // await logAudit(null, 'Delete ComprehensionTest', 'ComprehensionTest', `Deleted comprehension test with ID: ${body.id}`);
 
     return NextResponse.json(deletedComprehension);
   } catch (error) {

@@ -141,17 +141,13 @@ export function AddNewStudent() {
     setIsLoading(true);
     setFormErrors({});
 
-    console.log("Form Data being sent:", JSON.stringify(formData)); // Debug log
-
     try {
       if (!userId) {
         throw new Error("User ID is not available. Please log in again.");
       }
 
-      // Validate form data with Zod schema
       studentSchema.parse(formData);
 
-      // Prepare the payload for the API request
       const payload = {
         lrnNo: formData.lrnNo,
         firstname: formData.firstname,
@@ -165,6 +161,7 @@ export function AddNewStudent() {
         image: formData.image,
         studentUsername: formData.studentUsername,
         studentPassword: formData.studentPassword,
+        userId: userId,
       };
 
       const response = await fetch("/api/create-student", {
@@ -180,9 +177,13 @@ export function AddNewStudent() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || response.statusText);
+        if (errorData.message === "Username already exists.") {
+          setFormErrors({ studentUsername: true });
+          toast.error("Username already exists.");
+        } else {
+          throw new Error(errorData.message || response.statusText);
+        }
       }
-
       setFormData({
         firstname: "",
         lastname: "",
@@ -200,7 +201,9 @@ export function AddNewStudent() {
 
       toast.success("Student added successfully.");
 
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
       const err = error as Error;
       console.error(err);

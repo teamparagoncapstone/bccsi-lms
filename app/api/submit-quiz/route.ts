@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { calculateStudentAwards } from '@/lib/award';
+import { logAudit } from "@/lib/auditLogger";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -21,6 +22,7 @@ export async function POST(req: Request) {
       correctAnswersCount,
       wrongAnswersCount,
       questionId,
+      userId,
     } = body;
 
     // Validate required fields
@@ -69,7 +71,7 @@ export async function POST(req: Request) {
       } as any, 
     });
 
-
+    await logAudit(userId, 'Quiz Submitted', questionId, `Score: ${score}, Feedback: ${feedback}`);
     await calculateStudentAwards(studentFind.id);
 
     

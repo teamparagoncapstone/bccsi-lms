@@ -236,16 +236,24 @@ export default function VoiceExercisesHistory() {
         <Separator />
       </div>
       <div className="flex-1 relative overflow-hidden">
-        <div className="w-full max-w-3xl mx-auto p-8 bg-white rounded-lg shadow-md mt-4">
-          <h1 className="text-4xl font-bold text-center text-gray-800 mb-6">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: 'url("/images/voice-history1.png")',
+            filter: "blur(0px)",
+            zIndex: -1,
+          }}
+        ></div>
+        <div className="w-full max-w-3xl mx-auto p-4 sm:p-8 bg-white rounded-lg shadow-md mt-4">
+          <h1 className="text-3xl sm:text-4xl font-bold text-center text-gray-800 mb-6">
             Voice Exercises History
           </h1>
 
-          <div className="mb-4 flex justify-between items-center">
+          <div className="mb-4 flex flex-col sm:flex-row justify-between items-center">
             <input
               type="text"
               placeholder="Search by student name..."
-              className="border rounded px-3 py-2 w-1/2"
+              className="border rounded px-3 py-2 mb-2 sm:mb-0 w-full sm:w-1/2"
               onChange={handleSearch}
             />
             <button
@@ -264,7 +272,7 @@ export default function VoiceExercisesHistory() {
                 onClick={() => setSelectedExercise(exercise)}
               >
                 <div>
-                  <h2 className="text-xl font-semibold text-blue-600">
+                  <h2 className="text-lg sm:text-xl font-semibold text-blue-600">
                     {exercise.Student?.firstname} {exercise.Student?.lastname}
                   </h2>
                   <p>
@@ -286,10 +294,10 @@ export default function VoiceExercisesHistory() {
             ))}
           </ul>
 
-          <div className="flex justify-between my-4">
+          <div className="flex flex-col sm:flex-row justify-between my-4">
             <button
               onClick={handlePrevious}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
+              className="bg-blue-500 text-white px-4 py-2 rounded mb-2 sm:mb-0"
               disabled={currentPage === 1}
             >
               Previous
@@ -303,22 +311,22 @@ export default function VoiceExercisesHistory() {
             </button>
           </div>
 
-          <div className="flex space-x-2">
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
             <button
               onClick={handleExportCSV}
-              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 w-full sm:w-auto"
             >
               Export CSV
             </button>
             <button
               onClick={handleExportExcel}
-              className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+              className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 w-full sm:w-auto"
             >
               Export Excel
             </button>
             <button
               onClick={handleExportPDF}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full sm:w-auto"
             >
               Export PDF
             </button>

@@ -7,7 +7,7 @@ export async function POST(req: Request) {
   try {
     const {
       lrnNo, firstname, lastname, middlename, grade, sex, bdate, age, gname, image,
-      studentUsername, studentPassword, 
+      studentUsername, studentPassword, userId, 
     } = await req.json();
 
     const missingFields = [];
@@ -83,8 +83,8 @@ export async function POST(req: Request) {
     });
     
     try {
-      console.log("User ID for audit log:", createdUser.id);
-      await logAudit(createdUser.id, "Student Creation", student.id, `Created student: ${student.firstname} ${student.lastname}, Username: ${studentUsername}`);
+      
+      await logAudit(userId, "Student Creation", student.id, `Created student: ${student.firstname} ${student.lastname}, Username: ${studentUsername}`);
     } catch (auditError) {
       console.error("Audit logging failed:", auditError);
     }

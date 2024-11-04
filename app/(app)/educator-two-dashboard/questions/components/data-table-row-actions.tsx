@@ -160,7 +160,9 @@ export function DataTableRowActions<TData>({
       }
       const result = await response.json();
       toast.success("Question updated successfully.");
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
       console.log("Question updated successfully:", result);
     } catch (error) {
       toast.error("Failed to update question");
@@ -187,7 +189,9 @@ export function DataTableRowActions<TData>({
         throw new Error(errorText || "Failed to delete question");
       }
       toast.success("Question deleted successfully.");
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
       console.log("Question deleted successfully");
     } catch (error) {
       toast.error("Failed to delete question");

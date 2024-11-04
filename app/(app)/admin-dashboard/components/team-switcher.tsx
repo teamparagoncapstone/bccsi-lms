@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 
@@ -54,18 +52,18 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
           >
             <Avatar className="mr-2 h-5 w-5">
               <AvatarFallback>
-                {" "}
                 <Image
                   src="/assets/logo1.png"
-                  alt="Image"
+                  alt="Logo"
                   width={50}
                   height={50}
                   className="flex flex-col"
                 />
               </AvatarFallback>
             </Avatar>
-            {selectedTeam.label}
-            <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+            {/* Hidden on mobile */}
+            <span className="hidden sm:inline">{selectedTeam.label}</span>
+            <CaretSortIcon className="hidden sm:inline ml-auto h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
       </Popover>

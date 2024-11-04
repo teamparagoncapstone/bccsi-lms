@@ -56,6 +56,7 @@ export function AddNewUser() {
   >({});
   const [isLoading, setIsLoading] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
+  const [usernameExists, setUsernameExists] = useState(false);
 
   const handleChange = useCallback(
     (key: keyof typeof formData) => (value: string | undefined) => {
@@ -64,6 +65,10 @@ export function AddNewUser() {
           ...prevState,
           [key]: value,
         }));
+
+        if (key === "username") {
+          setUsernameExists(false);
+        }
 
         if (key === "password") {
           setFormErrors((prev) => ({ ...prev, password: value.length < 8 }));
@@ -79,7 +84,7 @@ export function AddNewUser() {
         }
       }
     },
-    []
+    [formData]
   );
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -106,9 +111,14 @@ export function AddNewUser() {
       });
 
       if (!response.ok) {
-        throw new Error(response.statusText);
+        const errorData = await response.json();
+        if (
+          errorData.message.includes("A user with this username already exists")
+        ) {
+          setUsernameExists(true);
+        }
+        throw new Error(errorData.message);
       }
-
       // Reset form
       setFormData({
         name: "",
@@ -119,6 +129,9 @@ export function AddNewUser() {
         image: "",
       });
       toast.success("User added successfully.");
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
       const err = error as Error;
       if (err.message.includes("Invalid email format")) {
@@ -189,6 +202,11 @@ export function AddNewUser() {
                     }}
                     className={formErrors.username ? "invalid" : ""}
                   />
+                  {usernameExists && (
+                    <p className="text-red-600 text-sm">
+                      *Username already exists.
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex">

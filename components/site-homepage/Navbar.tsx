@@ -62,7 +62,7 @@ const Navbar: React.FC = () => {
           {/* Increased right padding to 4rem (64px) */}
           <LoginModal />
         </div>
-        <div className="mobile-menu block md:hidden dark:text-white light:text-black">
+        {/* <div className="mobile-menu block md:hidden dark:text-white light:text-black">
           {!navbarOpen ? (
             <button
               onClick={() => setNavbarOpen(true)}
@@ -78,7 +78,7 @@ const Navbar: React.FC = () => {
               <XMarkIcon className="h-5 w-5" />
             </button>
           )}
-        </div>
+        </div> */}
       </div>
       {navbarOpen ? <MenuOverlay links={navLinks} /> : null}
     </nav>

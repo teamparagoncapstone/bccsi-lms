@@ -124,7 +124,7 @@ export function DataTableRowActions<TData>({
       }
     };
     fetchModules();
-  }, []);
+  }, [formData.moduleId]);
 
   useEffect(() => {
     if (formData.moduleId) {
@@ -166,7 +166,9 @@ export function DataTableRowActions<TData>({
         throw new Error(errorText || "Failed to update comprehension test");
       }
       toast.success("Comprehension Test updated successfully.");
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
       toast.error("Failed to update comprehension test");
       console.error("Error updating comprehension test:", error);
@@ -190,7 +192,9 @@ export function DataTableRowActions<TData>({
         throw new Error(errorText || "Failed to delete comprehension test");
       }
       toast.success("Comprehension Test deleted successfully.");
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
       toast.error("Failed to delete comprehension test");
       console.error("Error deleting comprehension test:", error);

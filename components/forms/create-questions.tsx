@@ -93,7 +93,9 @@ export function CreateQuestions() {
       }
 
       toast.success("Questions added successfully");
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
 
       setGrade("");
       setModules("");

@@ -227,7 +227,7 @@ export default function HistoryQuiz() {
         <div
           className="absolute inset-0 bg-cover bg-top "
           style={{
-            backgroundImage: 'url("/images/quiz-history1.png")',
+            backgroundImage: 'url("/images/quiz-history11.png")',
             filter: "blur(3px)",
             zIndex: -1,
           }}

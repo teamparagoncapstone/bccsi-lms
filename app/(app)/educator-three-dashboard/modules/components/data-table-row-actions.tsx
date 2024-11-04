@@ -114,7 +114,9 @@ export function DataTableRowActions<TData>({
 
       const result = await response.json();
       toast.success("Module updated successfully.");
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
       console.log("Module updated successfully:", result);
     } catch (error) {
       toast.error("Failed to update module");
@@ -143,7 +145,9 @@ export function DataTableRowActions<TData>({
       }
 
       toast.success("Module deleted successfully.");
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
       console.log("Module deleted successfully");
     } catch (error) {
       toast.error("Failed to delete module");

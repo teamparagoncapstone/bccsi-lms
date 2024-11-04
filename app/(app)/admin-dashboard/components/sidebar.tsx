@@ -1,4 +1,11 @@
 import { cn } from "@/lib/utils";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarMenu,
+  MenubarTrigger,
+  MenubarSeparator,
+} from "@/components/ui/menubar";
 import { Separator } from "@/components/ui/separator";
 import { list } from "../data/lists";
 import {

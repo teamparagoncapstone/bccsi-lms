@@ -51,7 +51,7 @@ export async function PUT(req: Request) {
     });
 
  
-    await logAudit(body.id, 'Upadte User', 'User', `Updated user : ${body.name}`);
+    await logAudit(body.id, 'Update User', 'User', `Updated user : ${body.name}`);
 
     return NextResponse.json(updatedUser);
   } catch (error) {

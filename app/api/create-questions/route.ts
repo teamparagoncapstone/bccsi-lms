@@ -26,12 +26,12 @@ export async function POST(req: Request) {
       }
     }
 
-    // Create all questions
+   
     const createdQuestions = await prisma.questions.createMany({
       data: questionsArray,
     });
 
-    // Log the creation of each question in the audit logs
+  
     for (const question of questionsArray) {
       await logAudit(question.userId, 'Question Creation', 'Question', `Question created for module ${question.question}`);
     }

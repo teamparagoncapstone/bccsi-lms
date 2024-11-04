@@ -22,7 +22,7 @@ interface VoiceExercisesHistory {
   createdAt: string;
 }
 
-const ITEMS_PER_PAGE = 5; // Number of items per page
+const ITEMS_PER_PAGE = 5;
 
 export default function VoiceHistory() {
   const { data: session } = useSession();
@@ -66,12 +66,10 @@ export default function VoiceHistory() {
     );
   if (error) return <p className="text-red-500 text-center text-lg">{error}</p>;
 
-  // Filter voice history based on search term (Voice Exercises)
   const filteredHistory = voiceHistory.filter((voice) =>
     voice.voice.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Pagination logic
   const totalPages = Math.ceil(filteredHistory.length / ITEMS_PER_PAGE);
   const displayedHistory = filteredHistory.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
@@ -114,7 +112,7 @@ export default function VoiceHistory() {
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
-              setCurrentPage(1); // Reset to the first page on search
+              setCurrentPage(1);
             }}
           />
 
@@ -146,7 +144,7 @@ export default function VoiceHistory() {
                         <td className="py-2 px-4">{voice.recognizedText}</td>
                         <td className="py-2 px-4">{voice.accuracyScore}</td>
                         <td className="py-2 px-4">
-                          {parseFloat(voice.pronunciationScore).toFixed(2)}
+                          {Math.round(parseFloat(voice.pronunciationScore))}
                         </td>
                         <td className="py-2 px-4">{voice.fluencyScore}</td>
                         <td className="py-2 px-4">{voice.speedScore}</td>

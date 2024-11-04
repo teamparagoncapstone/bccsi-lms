@@ -48,7 +48,7 @@ export async function PUT(req: Request) {
     });
 
     
-    await logAudit(body.userId, 'Update Question', 'Question', `Updated question : ${body.question}`);
+    // await logAudit(body.userId, 'Update Question', 'Question', `Updated question : ${body.question}`);
 
     return NextResponse.json(updatedQuestion);
   } catch (error) {
@@ -79,7 +79,7 @@ export async function DELETE(req: Request) {
     });
 
    
-    await logAudit(null, 'Delete Module', 'Question', `Deleted question with ID: ${body.id}`);
+    // await logAudit(null, 'Delete Module', 'Question', `Deleted question with ID: ${body.id}`);
 
     return NextResponse.json(deletedQuestion);
   } catch (error) {

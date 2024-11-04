@@ -209,6 +209,7 @@ model VoiceExcercisesHistory {
     Student            Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
     studentId          String
     completed          Boolean          @default(false)
+    grade              String
 }
 
 model ComprehensionTest {
@@ -267,6 +268,7 @@ model OTP {
 model AuditLogs {
     id        String   @id @unique @default(cuid())
     userId    String?
+    userName  String
     action    String
     entityId  String
     timestamp DateTime @default(now())

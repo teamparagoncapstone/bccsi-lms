@@ -7,8 +7,22 @@ export async function GET() {
             orderBy: {
                 timestamp: 'desc',
             },
+            include: {
+                user: { 
+                    select: {
+                        name: true, 
+                    },
+                },
+            },
         });
-        return NextResponse.json(logs);
+
+       
+        const formattedLogs = logs.map(log => ({
+            ...log,
+            userId: log.user?.name || log.userId,
+        }));
+
+        return NextResponse.json(formattedLogs);
     } catch (error) {
         console.error("Error fetching audit logs:", error);
         return NextResponse.json({
@@ -16,4 +30,4 @@ export async function GET() {
             message: 'An error occurred while fetching logs',
         }, { status: 500 });
     }
-} 
+}

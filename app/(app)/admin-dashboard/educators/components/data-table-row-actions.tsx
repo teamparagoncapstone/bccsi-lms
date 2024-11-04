@@ -45,12 +45,24 @@ interface FormData {
   password: string;
   educatorLevel: string;
   image: string;
+  userId: string;
 }
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData & { id: string; [key: string]: any }>;
 }
-
+const mapEducatorLevel = (displayLevel: string): string => {
+  switch (displayLevel) {
+    case "Educator 1":
+      return "EducatorOne";
+    case "Educator 2":
+      return "EducatorTwo";
+    case "Educator 3":
+      return "EducatorThree";
+    default:
+      return displayLevel;
+  }
+};
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
@@ -64,6 +76,7 @@ export function DataTableRowActions<TData>({
     password: "",
     educatorLevel: row.original.educatorLevel || "EducatorOne",
     image: row.original.image || "",
+    userId: row.original.userId || "",
   });
 
   const [formErrors, setFormErrors] = useState<any>({});
@@ -80,6 +93,7 @@ export function DataTableRowActions<TData>({
 
   const handleSubmit = async () => {
     setIsLoading(true);
+    const educatorLevel = mapEducatorLevel(formData.educatorLevel);
     try {
       const response = await fetch(`/api/edit-educator`, {
         method: "PUT",
@@ -89,9 +103,10 @@ export function DataTableRowActions<TData>({
         body: JSON.stringify({
           id: row.original.id,
           ...formData,
+          educatorLevel,
         }),
       });
-
+      console.log("Submitted form data:", formData);
       if (!response.ok) {
         const errorText = await response.text();
         console.error("API error response:", errorText);
@@ -118,7 +133,10 @@ export function DataTableRowActions<TData>({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id: row.original.id }),
+        body: JSON.stringify({
+          id: row.original.id,
+          userId: row.original.userId,
+        }),
       });
 
       if (!response.ok) {
@@ -256,11 +274,12 @@ export function DataTableRowActions<TData>({
                     >
                       <SelectTrigger>
                         <SelectValue>
-                          {formData.educatorLevel
-                            ? formData.educatorLevel
-                                .replace("EducatorOne", "Educator 1")
-                                .replace("EducatorTwo", "Educator 2")
-                                .replace("EducatorThree", "Educator 3")
+                          {formData.educatorLevel === "EducatorOne"
+                            ? "Educator 1"
+                            : formData.educatorLevel === "EducatorTwo"
+                            ? "Educator 2"
+                            : formData.educatorLevel === "EducatorThree"
+                            ? "Educator 3"
                             : "Select educator level"}
                         </SelectValue>
                       </SelectTrigger>

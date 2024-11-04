@@ -6,10 +6,10 @@ import { logAudit } from "@/lib/auditLogger"
 
 export async function POST(req: Request) {
   try {
-    const { username, educatorLevel, password, email, name, image } = await req.json();
+    const { username, educatorLevel, password, email, name, image, userId } = await req.json();
 
     // Check for missing fields
-    if (!username || !educatorLevel || !password || !name || !email || !image) {
+    if (!username || !educatorLevel || !password || !name || !email || !image || !userId) {
       return NextResponse.json({
         status: 'error',
         message: 'Please provide all required fields',
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
     });
 
     // Log educator creation audit
-    await logAudit(createdUser.id, 'Educator Creation', 'Educator', `Educator created with username: ${username}`);
+    await logAudit(userId, 'Educator Creation', 'Educator', `Educator created with username: ${username}`);
 
     return NextResponse.json({
       status: 'success',

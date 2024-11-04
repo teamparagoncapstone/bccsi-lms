@@ -33,6 +33,7 @@ interface ComprehensionListProps {
 export default function ComprehensionList({ voice }: ComprehensionListProps) {
   const { data: session } = useSession();
   const studentId = session?.user.studentId || "";
+  const userId = session?.user.id || "";
   const [comprehensions, setComprehensions] = useState<ComprehensionTest[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -111,6 +112,7 @@ export default function ComprehensionList({ voice }: ComprehensionListProps) {
       comprehensionId: question.id,
       studentId: studentId,
       studentUsername: session?.user.studentUsername || "",
+      userId: userId,
       score: percentage,
       totalQuestions: comprehensions.length,
       feedback: feedbackMessage,

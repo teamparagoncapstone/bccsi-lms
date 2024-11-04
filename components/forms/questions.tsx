@@ -215,7 +215,9 @@ export function AddNewQuestions() {
       setSelectedModuleId("");
       setFormErrors({});
       toast.success("Questions added successfully.");
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
       const err = error as Error;
       console.error(err);

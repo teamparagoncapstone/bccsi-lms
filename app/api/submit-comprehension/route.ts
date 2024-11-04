@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { VoiceExercises } from '@/components/forms/voiceExercises';
-
+import { logAudit } from "@/lib/auditLogger";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -21,6 +21,7 @@ export async function POST(req: Request) {
       correctAnswersCount,
       wrongAnswersCount,
       comprehensionId,
+      userId,
     } = body;
 
     // Validate required fields
@@ -67,6 +68,8 @@ export async function POST(req: Request) {
         },
       } as any, // Temporarily bypass type checking
     });
+
+    await logAudit(userId, 'Comprehension Test Submitted', comprehensionId, `Score: ${score}, Feedback: ${feedback}`);
 
     return NextResponse.json({
       status: 'success',
