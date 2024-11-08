@@ -13,11 +13,13 @@ import { useRouter } from "next/navigation";
 import { UserNav } from "@/app/(app)/grade-three-dashboard/_components/user-nav";
 import { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
-
+import { useSession } from "next-auth/react";
+import UnauthorizedPage from "@/components/forms/unauthorized";
+import Loading from "../loading";
 export default function DashboardPage() {
   const [modules, setModules] = useState([]);
   const router = useRouter();
-
+  const { data: session, status } = useSession();
   useEffect(() => {
     async function fetchModules() {
       try {
@@ -40,6 +42,12 @@ export default function DashboardPage() {
   const mathModules = modules.filter((module: any) =>
     module.subjects.includes("Math")
   );
+
+  if (status === "loading") return <Loading />;
+
+  if (status === "unauthenticated" || session?.user?.grade !== "GradeThree") {
+    return <UnauthorizedPage />;
+  }
 
   return (
     <div className="w-full md:h-screen">

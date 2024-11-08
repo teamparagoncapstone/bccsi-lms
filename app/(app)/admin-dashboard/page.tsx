@@ -14,6 +14,7 @@ import { useSession } from "next-auth/react";
 export default function AdminMenuBar() {
   const { data: session, status } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const router = useRouter();
   const [studentCounts, setStudentCounts] = useState({
     GradeOne: 0,
     GradeTwo: 0,
@@ -40,7 +41,6 @@ export default function AdminMenuBar() {
       console.error("Error fetching counts:", error);
     }
   };
-  const router = useRouter();
 
   if (status === "loading")
     return (

@@ -6,7 +6,7 @@ import { UserNav } from "@/app/(app)/grade-one-dashboard/_components/user-nav";
 import { SystemMenu } from "../_components/system-menu";
 import { Separator } from "@/components/ui/separator";
 import Loading from "../loading";
-
+import UnauthorizedPage from "@/components/forms/unauthorized";
 interface VoiceExercisesHistory {
   id: string;
   voice: string;
@@ -25,7 +25,7 @@ interface VoiceExercisesHistory {
 const ITEMS_PER_PAGE = 5;
 
 export default function VoiceHistory() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [voiceHistory, setVoiceHistory] = useState<VoiceExercisesHistory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,12 +58,12 @@ export default function VoiceHistory() {
     fetchVoiceHistory();
   }, [session]);
 
-  if (loading)
-    return (
-      <p className="text-center text-lg">
-        <Loading />
-      </p>
-    );
+  if (status === "loading") return <Loading />;
+
+  if (status === "unauthenticated" || session?.user?.grade !== "GradeThree") {
+    return <UnauthorizedPage />;
+  }
+
   if (error) return <p className="text-red-500 text-center text-lg">{error}</p>;
 
   // Filter voice history based on search term (Voice Exercises)

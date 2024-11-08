@@ -8,10 +8,12 @@ import TeamSwitcher from "../components/team-switcher";
 import { SystemMenu } from "../components/system-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-
+import { useSession } from "next-auth/react";
+import UnauthorizedPage from "@/components/forms/unauthorized";
+import Loading from "./loading";
 export default function ModulePage() {
   const [modules, setModules] = useState([]);
-
+  const { data: session, status } = useSession();
   useEffect(() => {
     async function fetchData() {
       try {
@@ -39,6 +41,9 @@ export default function ModulePage() {
 
     fetchData();
   }, []); // This useEffect will run only once after the initial render
+
+  if (status === "loading") return <Loading />;
+  if (status === "unauthenticated") return <UnauthorizedPage />;
 
   return (
     <div className="min-h-screen flex flex-col">

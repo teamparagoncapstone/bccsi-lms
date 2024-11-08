@@ -17,7 +17,7 @@ interface UpdateQuestionRequestBody {
   CorrectAnswers: string;
   moduleId: string;
   grade: Grade;
-  userId: string;
+  // userId: string;
 }
 
 interface DeleteQuestionRequestBody {
@@ -43,7 +43,7 @@ export async function PUT(req: Request) {
         CorrectAnswers: body.CorrectAnswers,
         grade: body.grade,
         moduleId: body.moduleId,
-        userId: body.userId,
+        // userId: body.userId,
       },
     });
 

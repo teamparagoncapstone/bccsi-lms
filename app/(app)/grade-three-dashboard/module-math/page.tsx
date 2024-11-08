@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import TeamSwitcher from "@/app/(app)/grade-three-dashboard/_components/team-switcher";
 import { UserNav } from "@/app/(app)/grade-three-dashboard/_components/user-nav";
-
+import { useSession } from "next-auth/react";
+import UnauthorizedPage from "@/components/forms/unauthorized";
+import Loading from "../loading";
 import { SystemMenu } from "../_components/system-menu";
 import NextVideo from "next-video";
 import {
@@ -27,6 +29,7 @@ export default function ModuleMathPage() {
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { data: session, status } = useSession();
   useEffect(() => {
     // Extract query parameters from the URL
     const title = searchParams.get("title");
@@ -53,10 +56,11 @@ export default function ModuleMathPage() {
     router.push("/grade-three-dashboard/module-homepage");
   };
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+  if (status === "loading") return <Loading />;
 
+  if (status === "unauthenticated" || session?.user?.grade !== "GradeThree") {
+    return <UnauthorizedPage />;
+  }
   if (!module) {
     return <p>No module data available.</p>;
   }

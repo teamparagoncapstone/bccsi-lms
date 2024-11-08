@@ -10,8 +10,11 @@ import { Separator } from "@/components/ui/separator";
 import { lists } from "../data/lists";
 import { Sidebar } from "../components/sidebar";
 import { Toaster } from "react-hot-toast";
-
+import UnauthorizedPage from "@/components/forms/unauthorized";
+import Loading from "@/components/loading";
+import { useSession } from "next-auth/react";
 export default function StudentsPage() {
+  const { data: session, status } = useSession();
   const [user, setUsers] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -41,6 +44,14 @@ export default function StudentsPage() {
 
     fetchData();
   }, []);
+
+  if (status === "loading")
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loading />
+      </div>
+    );
+  if (status === "unauthenticated") return <UnauthorizedPage />;
 
   return (
     <div className="min-h-screen flex flex-col">

@@ -152,9 +152,9 @@ export function DataTableRowActions<TData>({
           <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setIsDeleteConfirmOpen(true)}>
+          {/* <DropdownMenuItem onClick={() => setIsDeleteConfirmOpen(true)}>
             Delete
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
         </DropdownMenuContent>
       </DropdownMenu>
       {/*Edit*/}
@@ -245,7 +245,7 @@ export function DataTableRowActions<TData>({
                     )}
                   </div>
                 </div>
-                <div className="flex">
+                {/* <div className="flex">
                   <div className="w-1/2 mt-2 pr-4">
                     <Label>Role</Label>
                     <Select
@@ -264,7 +264,7 @@ export function DataTableRowActions<TData>({
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
+                </div> */}
               </CardContent>
             </Card>
           </div>

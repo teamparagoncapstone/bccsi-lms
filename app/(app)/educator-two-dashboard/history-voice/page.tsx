@@ -8,6 +8,8 @@ import Loading from "../loading";
 import * as XLSX from "xlsx"; // Import for Excel export
 import { jsPDF } from "jspdf"; // Import for PDF export
 import autoTable from "jspdf-autotable"; // Import for PDF table
+import { useSession } from "next-auth/react";
+import UnauthorizedPage from "@/components/forms/unauthorized";
 
 interface Student {
   id: string;
@@ -63,6 +65,7 @@ const VoiceExerciseModal = ({
 export default function VoiceExercisesHistory() {
   const [history, setHistory] = useState<VoiceExerciseHistory[]>([]);
   const [loading, setLoading] = useState(true);
+  const { data: session, status } = useSession();
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredHistory, setFilteredHistory] = useState<
@@ -213,12 +216,9 @@ export default function VoiceExercisesHistory() {
     doc.save("voice_exercises_history.pdf");
   };
 
-  if (loading)
-    return (
-      <p className="text-center align-center text-lg">
-        <Loading />
-      </p>
-    );
+  if (status === "loading") return <Loading />;
+  if (status === "unauthenticated") return <UnauthorizedPage />;
+
   if (error) return <p className="text-center text-red-500">Error: {error}</p>;
 
   return (

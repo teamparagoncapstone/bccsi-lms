@@ -7,10 +7,20 @@ import { UserNav } from "@/app/(app)/grade-one-dashboard/_components/user-nav";
 
 import { SystemMenu } from "../_components/system-menu";
 import { Separator } from "@/components/ui/separator";
+import { useSession } from "next-auth/react";
+import UnauthorizedPage from "@/components/forms/unauthorized";
+import Loading from "../loading";
 
 export default function Page() {
   const searchParams = useSearchParams();
   const moduleTitle = searchParams.get("title") || "Default Module Title"; // Provide a default value
+  const { data: session, status } = useSession();
+
+  if (status === "loading") return <Loading />;
+
+  if (status === "unauthenticated" || session?.user?.grade !== "GradeThree") {
+    return <UnauthorizedPage />;
+  }
 
   return (
     <div className="relative w-full md:h-16">

@@ -6,11 +6,19 @@ import TeamSwitcher from "@/app/(app)/grade-one-dashboard/_components/team-switc
 import { UserNav } from "@/app/(app)/grade-one-dashboard/_components/user-nav";
 import { SystemMenu } from "../_components/system-menu";
 import { Separator } from "@/components/ui/separator";
-
+import UnauthorizedPage from "@/components/forms/unauthorized";
+import Loading from "../loading";
+import { useSession } from "next-auth/react";
 export default function Page() {
+  const { data: session, status } = useSession();
   const searchParams = useSearchParams();
   const moduleTitle = searchParams.get("title") || "Default Module Title"; // Provide a default value
 
+  if (status === "loading") return <Loading />;
+
+  if (status === "unauthenticated" || session?.user?.grade !== "GradeOne") {
+    return <UnauthorizedPage />;
+  }
   return (
     <div className="relative w-full md:h-16">
       <div className="w-full h-auto md:h-16">

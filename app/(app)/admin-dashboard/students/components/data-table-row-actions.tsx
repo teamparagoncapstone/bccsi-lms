@@ -191,9 +191,9 @@ export function DataTableRowActions<TData>({
           <DropdownMenuItem onClick={() => setIsViewDialogOpen(true)}>
             View
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setIsDeleteConfirmOpen(true)}>
+          {/* <DropdownMenuItem onClick={() => setIsDeleteConfirmOpen(true)}>
             Delete
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
         </DropdownMenuContent>
       </DropdownMenu>
       {/*Edit*/}
@@ -300,7 +300,7 @@ export function DataTableRowActions<TData>({
                     />
                   </div>
                 </div>
-                <div className="flex flex-wrap">
+                {/* <div className="flex flex-wrap">
                   <div className="w-1/2 mt-2 pr-4">
                     <Label>Select Grade Level</Label>
                     <Select
@@ -317,7 +317,7 @@ export function DataTableRowActions<TData>({
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
+                </div> */}
                 <div className="flex flex-wrap">
                   <div className="w-1/2 mt-2 pr-4">
                     <Label htmlFor="gname" className="text-right">

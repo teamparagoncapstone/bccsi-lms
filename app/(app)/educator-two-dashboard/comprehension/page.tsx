@@ -7,10 +7,13 @@ import TeamSwitcher from "../components/team-switcher";
 import { SystemMenu } from "../components/system-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import { useSession } from "next-auth/react";
+import UnauthorizedPage from "@/components/forms/unauthorized";
+import Loading from "./loading";
 
 export default function ComprehensionPage() {
   const [comprehensions, setComprehension] = useState([]);
-
+  const { data: session, status } = useSession();
   useEffect(() => {
     async function fetchData() {
       try {
@@ -35,6 +38,9 @@ export default function ComprehensionPage() {
 
     fetchData();
   }, []);
+
+  if (status === "loading") return <Loading />;
+  if (status === "unauthenticated") return <UnauthorizedPage />;
 
   return (
     <div className="min-h-screen flex flex-col">

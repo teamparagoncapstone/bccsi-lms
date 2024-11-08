@@ -14,7 +14,9 @@ import { SystemMenu } from "../_components/system-menu";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import NextVideo from "next-video";
-import sample from "@/videos/sample.mp4";
+import { useSession } from "next-auth/react";
+import UnauthorizedPage from "@/components/forms/unauthorized";
+import Loading from "../loading";
 
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -30,6 +32,7 @@ export default function ModuleReadingPage() {
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     const title = searchParams.get("title");
@@ -57,8 +60,10 @@ export default function ModuleReadingPage() {
       : "";
     router.push(`/grade-three-dashboard/voice-exercises?title=${title}`);
   };
-  if (loading) {
-    return <p>Loading...</p>;
+  if (status === "loading") return <Loading />;
+
+  if (status === "unauthenticated" || session?.user?.grade !== "GradeThree") {
+    return <UnauthorizedPage />;
   }
   if (!module) {
     return <p>No module data available.</p>;

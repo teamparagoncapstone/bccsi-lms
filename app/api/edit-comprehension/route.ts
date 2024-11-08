@@ -17,7 +17,7 @@ interface UpdateComprehensionRequestBody {
   CorrectAnswers: string;
   image: string;
   grade: Grade;
-  userId: string;
+  // userId: string;
 }
 
 interface DeleteComprehensionRequestBody {
@@ -42,7 +42,7 @@ export async function PUT(req: Request) {
         image: body.image,
         CorrectAnswers: body.CorrectAnswers,
         grade: body.grade,
-        userId: body.userId,
+        // userId: body.userId,
       },
     });
 

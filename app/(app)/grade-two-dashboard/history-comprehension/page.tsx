@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import TeamSwitcher from "@/app/(app)/grade-one-dashboard/_components/team-switcher";
 import Loading from "../loading";
 import { useSession } from "next-auth/react";
-
+import UnauthorizedPage from "@/components/forms/unauthorized";
 interface VoiceExcercise {
   voice: string | null;
 }
@@ -42,7 +42,7 @@ interface ComprehensionHistory {
 }
 
 const ComprehensionHistory: React.FC = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [history, setHistory] = useState<ComprehensionHistory[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -113,12 +113,10 @@ const ComprehensionHistory: React.FC = () => {
     setCurrentPage(1);
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Loading />
-      </div>
-    );
+  if (status === "loading") return <Loading />;
+
+  if (status === "unauthenticated" || session?.user?.grade !== "GradeTwo") {
+    return <UnauthorizedPage />;
   }
   if (error) return <p>Error: {error}</p>;
 

@@ -13,13 +13,13 @@ interface UpdateVoiceRequestBody {
   voice: string;
   voiceImage: string;
   grade: Grade;
-  userId: string;
+  // userId: string;
 }
 
 interface DeleteVoiceRequestBody {
   id: string;
   voice: string;
-  userId: string;
+  // userId: string;
 }
 
 export async function PUT(req: Request) {
@@ -37,7 +37,7 @@ export async function PUT(req: Request) {
         voice: body.voice,
         voiceImage: body.voiceImage,
         grade: body.grade,
-        userId: body.userId,
+        // userId: body.userId,
       },
     });
 
@@ -55,7 +55,7 @@ export async function DELETE(req: Request) {
   try {
     const body: DeleteVoiceRequestBody = await req.json();
 
-    if (!body.id || !body.userId) {
+    if (!body.id) {
       return NextResponse.json({ error: 'Voice Exercises ID and User ID are required' }, { status: 400 });
     }
 

@@ -10,7 +10,9 @@ import { CSVLink } from "react-csv";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-
+import { useSession } from "next-auth/react";
+import UnauthorizedPage from "@/components/forms/unauthorized";
+import Loading from "../loading";
 type StudentData = {
   id: string;
   firstname: string;
@@ -27,7 +29,6 @@ type StudentData = {
   averageProgress: number;
 };
 
-// ProgressBar Component
 const ProgressBar = ({ progress }: { progress: number }) => (
   <div className="relative w-full bg-gray-200 rounded-full h-4 overflow-hidden shadow-sm">
     <div
@@ -85,6 +86,7 @@ export default function StudentCompletion() {
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const studentsPerPage = 5;
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -161,6 +163,9 @@ export default function StudentCompletion() {
 
     doc.save("student_completion.pdf");
   };
+
+  if (status === "loading") return <Loading />;
+  if (status === "unauthenticated") return <UnauthorizedPage />;
 
   return (
     <div className="min-h-screen flex flex-col">

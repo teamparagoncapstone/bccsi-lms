@@ -8,6 +8,8 @@ import Loading from "../loading";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
+import { useSession } from "next-auth/react";
+import UnauthorizedPage from "@/components/forms/unauthorized";
 
 type VoiceExercise = {
   id: string;
@@ -45,6 +47,7 @@ const ITEMS_PER_PAGE = 5;
 export default function ComprehensionHistory() {
   const [histories, setHistories] = useState<ComprehensionHistory[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const { data: session, status } = useSession();
   const [studentSearchTerm, setStudentSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -182,6 +185,9 @@ export default function ComprehensionHistory() {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Comprehension History");
     XLSX.writeFile(workbook, "comprehension_history.xlsx");
   };
+
+  if (status === "loading") return <Loading />;
+  if (status === "unauthenticated") return <UnauthorizedPage />;
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">

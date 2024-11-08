@@ -7,7 +7,7 @@ import { SystemMenu } from "../_components/system-menu";
 import { Separator } from "@/components/ui/separator";
 import Loading from "../loading";
 import { AiOutlineTrophy } from "react-icons/ai";
-
+import UnauthorizedPage from "@/components/forms/unauthorized";
 interface QuizHistoryItem {
   id: string;
   question: string;
@@ -28,7 +28,7 @@ interface QuizHistoryItem {
 const ITEMS_PER_PAGE = 5;
 
 export default function HistoryQuiz() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [quizHistory, setQuizHistory] = useState<QuizHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -82,12 +82,11 @@ export default function HistoryQuiz() {
     currentPage * ITEMS_PER_PAGE
   );
 
-  if (loading)
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Loading />
-      </div>
-    );
+  if (status === "loading") return <Loading />;
+
+  if (status === "unauthenticated" || session?.user?.grade !== "GradeThree") {
+    return <UnauthorizedPage />;
+  }
   if (error) return <p className="text-red-500 text-center text-lg">{error}</p>;
 
   return (

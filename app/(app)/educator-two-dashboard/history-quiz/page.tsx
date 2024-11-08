@@ -9,6 +9,8 @@ import Loading from "../loading";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
+import { useSession } from "next-auth/react";
+import UnauthorizedPage from "@/components/forms/unauthorized";
 
 interface Student {
   id: string;
@@ -59,7 +61,7 @@ export default function HistoryQuiz() {
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-
+  const { data: session, status } = useSession();
   useEffect(() => {
     const fetchQuizHistory = async () => {
       try {
@@ -200,12 +202,8 @@ export default function HistoryQuiz() {
     doc.save("quiz_history.pdf");
   };
 
-  if (loading)
-    return (
-      <div className="text-center justify-center text-blue-500">
-        <Loading />
-      </div>
-    );
+  if (status === "loading") return <Loading />;
+  if (status === "unauthenticated") return <UnauthorizedPage />;
   if (error)
     return <div className="text-center text-red-500">Error: {error}</div>;
 

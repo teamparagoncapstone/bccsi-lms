@@ -7,6 +7,9 @@ import { UserNav } from "@/app/(app)/admin-dashboard/components/user-nav";
 import { Sidebar } from "../components/sidebar";
 import { lists } from "../data/lists";
 import TeamSwitcher from "../components/team-switcher";
+import UnauthorizedPage from "@/components/forms/unauthorized";
+import Loading from "@/components/loading";
+import { useSession } from "next-auth/react";
 interface Student {
   id: string;
   firstname: string;
@@ -170,6 +173,7 @@ const StudentCard = ({ student }: { student: Student }) => {
 };
 
 export default function ProgressBarComponent() {
+  const { data: session, status } = useSession();
   const [students, setStudents] = useState<Student[]>([]);
   const [totalModules, setTotalModules] = useState<number>(0);
   const [modulesByGrade, setModulesByGrade] = useState<{
@@ -223,7 +227,13 @@ export default function ProgressBarComponent() {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
-
+  if (status === "loading")
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loading />
+      </div>
+    );
+  if (status === "unauthenticated") return <UnauthorizedPage />;
   return (
     <div className="flex flex-col h-screen">
       {/* Navbar */}

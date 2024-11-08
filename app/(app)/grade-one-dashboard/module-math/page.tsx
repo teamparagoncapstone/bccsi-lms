@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import TeamSwitcher from "@/app/(app)/grade-one-dashboard/_components/team-switcher";
 import { UserNav } from "@/app/(app)/grade-one-dashboard/_components/user-nav";
-
+import UnauthorizedPage from "@/components/forms/unauthorized";
+import Loading from "../loading";
+import { useSession } from "next-auth/react";
 import { SystemMenu } from "../_components/system-menu";
 import NextVideo from "next-video";
 import Preloader from "@/components/Preloader";
@@ -29,6 +31,7 @@ export default function ModuleMathPage() {
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { data: session, status } = useSession();
   useEffect(() => {
     const title = searchParams.get("title");
     const video = searchParams.get("video");
@@ -53,12 +56,10 @@ export default function ModuleMathPage() {
     router.push("/grade-one-dashboard/module-homepage");
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <Preloader />
-      </div>
-    );
+  if (status === "loading") return <Loading />;
+
+  if (status === "unauthenticated" || session?.user?.grade !== "GradeOne") {
+    return <UnauthorizedPage />;
   }
 
   if (!module) {

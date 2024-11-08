@@ -15,6 +15,8 @@ import { CSVLink } from "react-csv";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import UnauthorizedPage from "@/components/forms/unauthorized";
+import { useSession } from "next-auth/react";
 import { Bar } from "react-chartjs-2";
 import Skeleton from "react-loading-skeleton";
 import autoTable from "jspdf-autotable";
@@ -98,6 +100,7 @@ interface CombinedHistory {
 
 export default function Reports() {
   const [grade, setGrade] = useState("GradeOne");
+  const { data: session, status } = useSession();
   const [historyData, setHistoryData] = useState<CombinedHistory | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -410,6 +413,13 @@ export default function Reports() {
     },
   };
 
+  if (status === "loading")
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loading />
+      </div>
+    );
+  if (status === "unauthenticated") return <UnauthorizedPage />;
   return (
     <div className="flex flex-col h-screen">
       {/* Navbar */}

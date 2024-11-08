@@ -10,6 +10,8 @@ import TeamSwitcher from "../components/team-switcher";
 import { Separator } from "@/components/ui/separator";
 import { lists } from "../data/lists";
 import Loading from "@/components/loading";
+import UnauthorizedPage from "@/components/forms/unauthorized";
+import { useSession } from "next-auth/react";
 interface AuditLog {
   id: string;
   userId: string | null;
@@ -22,6 +24,7 @@ interface AuditLog {
 
 export default function AuditLogs() {
   const [logs, setLogs] = useState<AuditLog[]>([]);
+  const { data: session, status } = useSession();
   const [search, setSearch] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -127,6 +130,14 @@ export default function AuditLogs() {
       </div>
     );
   }
+
+  if (status === "loading")
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loading />
+      </div>
+    );
+  if (status === "unauthenticated") return <UnauthorizedPage />;
 
   return (
     <div className="flex flex-col h-screen">

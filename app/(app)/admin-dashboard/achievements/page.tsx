@@ -4,7 +4,9 @@ import { UserNav } from "@/app/(app)/admin-dashboard/components/user-nav";
 import { Sidebar } from "../components/sidebar";
 import { lists } from "../data/lists";
 import TeamSwitcher from "../components/team-switcher";
-
+import UnauthorizedPage from "@/components/forms/unauthorized";
+import Loading from "@/components/loading";
+import { useSession } from "next-auth/react";
 interface Student {
   id: string;
   firstname: string;
@@ -107,6 +109,7 @@ function Pagination({ currentPage, totalPages, onPageChange }: any) {
 }
 
 export default function AchievementPage() {
+  const { data: session, status } = useSession();
   const [awards, setAwards] = useState<Award[]>([]);
   const [filteredAwards, setFilteredAwards] = useState<Award[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -160,6 +163,14 @@ export default function AchievementPage() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  if (status === "loading")
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loading />
+      </div>
+    );
+  if (status === "unauthenticated") return <UnauthorizedPage />;
 
   return (
     <div className="flex flex-col h-screen">

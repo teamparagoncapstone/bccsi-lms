@@ -9,6 +9,8 @@ import Loading from "../loading";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
+import { useSession } from "next-auth/react";
+import UnauthorizedPage from "@/components/forms/unauthorized";
 
 interface Student {
   id: string;
@@ -54,6 +56,7 @@ interface TableData {
 export default function HistoryQuiz() {
   const [quizHistory, setQuizHistory] = useState<QuizHistory[]>([]);
   const [loading, setLoading] = useState(true);
+  const { data: session, status } = useSession();
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
@@ -200,12 +203,9 @@ export default function HistoryQuiz() {
     doc.save("quiz_history.pdf");
   };
 
-  if (loading)
-    return (
-      <div className="text-center justify-center text-blue-500">
-        <Loading />
-      </div>
-    );
+  if (status === "loading") return <Loading />;
+  if (status === "unauthenticated") return <UnauthorizedPage />;
+
   if (error)
     return <div className="text-center text-red-500">Error: {error}</div>;
 
