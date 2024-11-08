@@ -89,7 +89,7 @@ const VoiceExercisesList = ({ moduleTitle }: VoiceExercisesListProps) => {
   //`https://bccsi-flask-stt-app.onrender.com/api/voice-exercises?moduleTitle=${encodeURIComponent(
 
         const response = await fetch(
-		  `http://localhost:5000/api/voice-exercises?moduleTitle=${encodeURIComponent(
+		  `https://bccsi-lms.vercel.app/api/voice-exercises?moduleTitle=${encodeURIComponent(
             moduleTitle
           )}&studentId=${session.user.studentId}`
         );
@@ -169,7 +169,7 @@ const VoiceExercisesList = ({ moduleTitle }: VoiceExercisesListProps) => {
 
        //"https://bccsi-flask-stt-app.onrender.com/api/voice-exercises-history",
       const response = await fetch(
-	  "http://localhost:5000/api/voice-exercises-history",
+	  "https://bccsi-lms.vercel.app/api/voice-exercises-history",
         {
           method: "POST",
           body: formData,
@@ -225,7 +225,7 @@ const VoiceExercisesList = ({ moduleTitle }: VoiceExercisesListProps) => {
 
       const response = await fetch(
 	  
-		"http://localhost:5000/api/submit-exercise",       
+		"https://bccsi-lms.vercel.app/api/submit-exercise",       
 	  //"https://bccsi-flask-stt-app.onrender.com/api/submit-exercise",
         {
           method: "POST",

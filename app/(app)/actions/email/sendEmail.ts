@@ -1,7 +1,7 @@
 "use server";
 
 import { Resend } from "resend";
-import { CreateEmailOptions, CreateEmailRequestOptions } from "resend";
+import { CreateEmailOptions, CreateEmailRequestOptions } from "resend/build/src/emails/interfaces";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
