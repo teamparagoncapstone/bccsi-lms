@@ -29,7 +29,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 migrate.init_app(app, db) 
 
-CORS(app, origins=["http://localhost:3000"])  
+CORS(app, origins=["http://localhost:3000","ep-young-tooth-a5czrfif.us-east-2.aws.neon.tech"])  
 
 def assign_award(average_score):
     """Helper function to assign award based on average score"""
