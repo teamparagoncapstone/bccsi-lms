@@ -365,7 +365,7 @@ export const VerifyEmailEmailTemplate: React.FC<Readonly<VerifyEmailEmailTemplat
                                                             <tr>
                                                                 <td class="pad" style="padding-bottom:30px;padding-left:40px;padding-right:40px;padding-top:20px;">
                                                                     <div style="color:#555555;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:12px;line-height:120%;text-align:left;mso-line-height-alt:14.399999999999999px;">
-                                                                        <p style="margin: 0; word-break: break-word;"><span style="color: #95979c;">RD Realty Development Corporation Copyright © 2020</span></p>
+                                                                        <p style="margin: 0; word-break: break-word;"><span style="color: #95979c;">Team Paragon Copyright © 2024</span></p>
                                                                     </div>
                                                                 </td>
                                                             </tr>
