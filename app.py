@@ -88,8 +88,8 @@ def get_voice_exercises():
             Module.moduleTitle == module_title
         ).first()
 
-        exercises = (VoiceExercises.query.filter(VoiceExercises.userId==student_id) .all())
-        
+        exercises = (VoiceExercises.query.filter(VoiceExercises.userId==student_id).all())
+
         # exercises = VoiceExcercises.query.join(Module).filter(Module.moduleTitle == module_title).all()
 
         results = [
